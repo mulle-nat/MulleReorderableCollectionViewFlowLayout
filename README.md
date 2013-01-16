@@ -1,3 +1,5 @@
+a fork to make it maintainable by myself
+
 LXReorderableCollectionViewFlowLayout
 =====================================
 
