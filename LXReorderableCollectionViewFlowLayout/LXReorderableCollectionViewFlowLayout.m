@@ -10,6 +10,7 @@
 
 #define LX_FRAMES_PER_SECOND 60.0
 
+
 #ifndef CGGEOMETRY_LXSUPPORT_H_
 CG_INLINE CGPoint LXS_CGPointAdd(CGPoint thePoint1, CGPoint thePoint2)
 {
@@ -43,6 +44,7 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 
 @end
 
+
 @implementation UICollectionViewLayoutAttributes ( LXReorderableCollectionViewFlowLayout)
 
 - (void) applyToLayoutIfNeeded:(LXReorderableCollectionViewFlowLayout *) layout
@@ -60,34 +62,40 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 {
    UILongPressGestureRecognizer   *longer;
    UIPanGestureRecognizer         *panner;
+   UICollectionView               *collectionView;
+   
+   collectionView = [self collectionView];
    
    longer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                           action:@selector( handleLongPressGesture:)];
 
-   // Links the default long press gesture recognizer to the custom long press gesture recognizer we are creating now
-   // by enforcing failure dependency so that they doesn't clash.
-   for( UIGestureRecognizer *recognizer in self.collectionView.gestureRecognizers)
+   [longer setDelegate:self];
+   [collectionView addGestureRecognizer:longer];
+   [self setLongPressGestureRecognizer:longer];
+
+   // Links the default long press gesture recognizer to the custom long press
+   // gesture recognizer we are creating now by enforcing failure dependency
+   // so that they doesn't clash.
+   for( UIGestureRecognizer *recognizer in [collectionView gestureRecognizers])
    {
       if( [recognizer isKindOfClass:[UILongPressGestureRecognizer class]])
          [recognizer requireGestureRecognizerToFail:longer];
    }
+   
 
-   longer.delegate = self;
-   [self.collectionView addGestureRecognizer:longer];
-   self.longPressGestureRecognizer = longer;
+   panner = [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                    action:@selector( handlePanGesture:)];
+   [panner setDelegate:self];
+   [collectionView addGestureRecognizer:panner];
+   
+   [self setPanGestureRecognizer:panner];
 
-   panner =  [[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                     action:@selector( handlePanGesture: )];
-   panner.delegate = self;
-   [self.collectionView addGestureRecognizer:panner];
-   self.panGestureRecognizer = panner;
-
-   self.triggerScrollingEdgeInsets = UIEdgeInsetsMake(50.0f, 50.0f, 50.0f, 50.0f);
-   self.scrollingSpeed             = 300.0f;
+   [self setTriggerScrollingEdgeInsets:UIEdgeInsetsMake( 50.0f, 50.0f, 50.0f, 50.0f)];
+   [self setScrollingSpeed:300.0f];
 
    [self invalidateAutoScroll];
 
-   self.alwaysScroll   = YES;
+   [self setAlwaysScroll:YES];
 }
 
 
@@ -99,128 +107,128 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 
 #pragma mark - Custom methods
 
-- (void) applyLayoutAttributes:(UICollectionViewLayoutAttributes *) theLayoutAttributes
+- (void) applyLayoutAttributes:(UICollectionViewLayoutAttributes *) attributes
 {
-   if( [theLayoutAttributes.indexPath isEqual:self.selectedItemIndexPath])
-      theLayoutAttributes.hidden = YES;
+   if( [[attributes indexPath] isEqual:[self selectedItemIndexPath]])
+      [attributes setHidden:YES];
 }
 
 
 - (void) invalidateLayoutIfNecessary
 {
-   NSIndexPath   *theIndexPathOfSelectedItem = [self.collectionView indexPathForItemAtPoint:self.currentView.center];
-
-   if((! [theIndexPathOfSelectedItem isEqual:self.selectedItemIndexPath]) && (theIndexPathOfSelectedItem))
+   NSIndexPath        *selectedPath;
+   BOOL               shouldMove;
+   NSIndexPath        *previousPath;
+   UICollectionView   *collectionView;
+   id<LXReorderableCollectionViewDelegateFlowLayout>   delegate;
+   
+   collectionView = [self collectionView];
+   selectedPath   = [collectionView indexPathForItemAtPoint:self.currentView.center];
+   previousPath   = [self selectedItemIndexPath];
+   
+   if( ! selectedPath || [selectedPath isEqual:previousPath])
+      return;
+   
+   [self setSelectedItemIndexPath:selectedPath];
+   
+   delegate = (id <LXReorderableCollectionViewDelegateFlowLayout> ) [collectionView delegate];
+   if( [delegate conformsToProtocol:@protocol( LXReorderableCollectionViewDelegateFlowLayout)])
    {
-      NSIndexPath   *thePreviousSelectedIndexPath = self.selectedItemIndexPath;
-      self.selectedItemIndexPath = theIndexPathOfSelectedItem;
-
-      id<LXReorderableCollectionViewDelegateFlowLayout>   theDelegate =
-         (id<LXReorderableCollectionViewDelegateFlowLayout> )self.collectionView.delegate;
-
-      if( [theDelegate conformsToProtocol:@protocol( LXReorderableCollectionViewDelegateFlowLayout )])
+      // Check with the delegate to see if this move is even allowed.
+      if( [delegate respondsToSelector:@selector( collectionView:layout:itemAtIndexPath:shouldMoveToIndexPath: )])
       {
-         // Check with the delegate to see if this move is even allowed.
-         if( [theDelegate respondsToSelector:@selector( collectionView:layout:itemAtIndexPath:shouldMoveToIndexPath: )])
-         {
-            BOOL   shouldMove = [theDelegate collectionView:self.collectionView
-                                                     layout:self
-                                            itemAtIndexPath:thePreviousSelectedIndexPath
-                                      shouldMoveToIndexPath:theIndexPathOfSelectedItem];
-
-            if( ! shouldMove)
-               return;
-         }
-
-         // Proceed with the move
-         [theDelegate collectionView:self.collectionView
-                              layout:self
-                     itemAtIndexPath:thePreviousSelectedIndexPath
-                 willMoveToIndexPath:theIndexPathOfSelectedItem];
+         shouldMove = [delegate collectionView:collectionView
+                                        layout:self
+                               itemAtIndexPath:previousPath
+                         shouldMoveToIndexPath:selectedPath];
+         
+         if( ! shouldMove)
+            return;
       }
-
-      [self.collectionView performBatchUpdates:^{
-          // [self.collectionView moveItemAtIndexPath:thePreviousSelectedIndexPath toIndexPath:theIndexPathOfSelectedItem];
-          [self.collectionView deleteItemsAtIndexPaths:@[thePreviousSelectedIndexPath]];
-          [self.collectionView insertItemsAtIndexPaths:@[theIndexPathOfSelectedItem]];
-       } completion:^(BOOL finished) {
-       }];
+      
+      // Proceed with the move
+      [delegate collectionView:collectionView
+                        layout:self
+               itemAtIndexPath:previousPath
+           willMoveToIndexPath:selectedPath];
    }
+   
+   [collectionView performBatchUpdates:^{
+      // [self.collectionView moveItemAtIndexPath:previousPath toIndexPath:selectedPath];
+      [collectionView deleteItemsAtIndexPaths:@[previousPath]];
+      [collectionView insertItemsAtIndexPaths:@[selectedPath]];
+   } completion:^(BOOL finished) {
+   }];
 }
 
 
 #pragma mark - Target/Action methods
 
-- (void) handleScroll:(NSTimer *) theTimer
+- (void) handleScroll:(NSTimer *) timer
 {
-   LXDirection   theScrollingDirection =
-      (LXDirection) [theTimer.userInfo[ LXScrollingDirectionKey] integerValue];
+   LXDirection   dir;
+   CGFloat   theDistance;
+   CGPoint   theContentOffset;
+   CGPoint   translation;
+   CGRect    bounds;
+   CGSize    contentSize;
+   CGFloat   theMinX;
+   CGFloat   theMaxX;
+   CGFloat   theMinY;
+   CGFloat   theMaxY;
+   
+   dir = (LXDirection) [[timer userInfo][ LXScrollingDirectionKey] integerValue];
 
-   switch( theScrollingDirection)
+   theDistance      = self.scrollingSpeed / LX_FRAMES_PER_SECOND;
+   theContentOffset = self.collectionView.contentOffset;
+   bounds = self.collectionView.bounds;
+   contentSize   = self.collectionView.contentSize;
+   
+   switch( dir)
    {
    case LXUp:
-   {
-      CGFloat   theDistance      = -(self.scrollingSpeed / LX_FRAMES_PER_SECOND);
-      CGPoint   theContentOffset = self.collectionView.contentOffset;
-      CGFloat   theMinY          = 0.0f;
+      theDistance = -theDistance;
+      theMinY     = 0.0f;
 
-      if((theContentOffset.y + theDistance) <= theMinY)
+      if( (theContentOffset.y + theDistance) <= theMinY)
          theDistance = -theContentOffset.y;
 
-      self.collectionView.contentOffset = LXS_CGPointAdd(theContentOffset, CGPointMake(0.0f, theDistance));
-      self.currentViewCenter            = LXS_CGPointAdd(self.currentViewCenter, CGPointMake(0.0f, theDistance));
-      self.currentView.center           = LXS_CGPointAdd(self.currentViewCenter, self.panTranslationInCollectionView);
-   } break;
+      translation = CGPointMake( 0.0f, theDistance);
+      break;
 
    case LXDown:
-   {
-      CGFloat   theDistance      = (self.scrollingSpeed / LX_FRAMES_PER_SECOND);
-      CGPoint   theContentOffset = self.collectionView.contentOffset;
-      CGFloat   theMaxY          =
-         MAX(self.collectionView.contentSize.height, CGRectGetHeight(self.collectionView.bounds)) - CGRectGetHeight(
-            self.collectionView.bounds);
+      theMaxY = MAX( contentSize.height, CGRectGetHeight( bounds)) - CGRectGetHeight( bounds);
 
-      if((theContentOffset.y + theDistance) >= theMaxY)
+      if( (theContentOffset.y + theDistance) >= theMaxY)
          theDistance = theMaxY - theContentOffset.y;
-
-      self.collectionView.contentOffset = LXS_CGPointAdd(theContentOffset, CGPointMake(0.0f, theDistance));
-      self.currentViewCenter            = LXS_CGPointAdd(self.currentViewCenter, CGPointMake(0.0f, theDistance));
-      self.currentView.center           = LXS_CGPointAdd(self.currentViewCenter, self.panTranslationInCollectionView);
-   } break;
+         
+      translation = CGPointMake( 0.0f, theDistance);
+      break;
 
    case LXLeft:
-   {
-      CGFloat   theDistance      = -(self.scrollingSpeed / LX_FRAMES_PER_SECOND);
-      CGPoint   theContentOffset = self.collectionView.contentOffset;
-      CGFloat   theMinX          = 0.0f;
+      theDistance = -theDistance;
+      theMinX     = 0.0f;
 
-      if((theContentOffset.x + theDistance) <= theMinX)
+      if( (theContentOffset.x + theDistance) <= theMinX)
          theDistance = -theContentOffset.x;
-
-      self.collectionView.contentOffset = LXS_CGPointAdd(theContentOffset, CGPointMake(theDistance, 0.0f));
-      self.currentViewCenter            = LXS_CGPointAdd(self.currentViewCenter, CGPointMake(theDistance, 0.0f));
-      self.currentView.center           = LXS_CGPointAdd(self.currentViewCenter, self.panTranslationInCollectionView);
-   } break;
+      translation = CGPointMake( theDistance, 0.0f);
+      break;
 
    case LXRight:
-   {
-      CGFloat   theDistance      = (self.scrollingSpeed / LX_FRAMES_PER_SECOND);
-      CGPoint   theContentOffset = self.collectionView.contentOffset;
-      CGFloat   theMaxX          =
-         MAX(self.collectionView.contentSize.width, CGRectGetWidth(self.collectionView.bounds)) - CGRectGetWidth(
-            self.collectionView.bounds);
+      theMaxX = MAX( contentSize.width, CGRectGetWidth( bounds)) - CGRectGetWidth( bounds);
 
       if((theContentOffset.x + theDistance) >= theMaxX)
          theDistance = theMaxX - theContentOffset.x;
-
-      self.collectionView.contentOffset = LXS_CGPointAdd(theContentOffset, CGPointMake(theDistance, 0.0f));
-      self.currentViewCenter            = LXS_CGPointAdd(self.currentViewCenter, CGPointMake(theDistance, 0.0f));
-      self.currentView.center           = LXS_CGPointAdd(self.currentViewCenter, self.panTranslationInCollectionView);
-   } break;
+      translation = CGPointMake( theDistance, 0.0f);
+      break;
 
    default:
-      break;
+         abort();
    }
+   
+   self.collectionView.contentOffset = LXS_CGPointAdd( theContentOffset, translation);
+   self.currentViewCenter            = LXS_CGPointAdd( self.currentViewCenter, translation);
+   self.currentView.center           = LXS_CGPointAdd( self.currentViewCenter, self.panTranslationInCollectionView);
 }
 
 
@@ -231,31 +239,31 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
    case UIGestureRecognizerStateBegan:
    {
       CGPoint       theLocationInCollectionView = [theLongPressGestureRecognizer locationInView:self.collectionView];
-      NSIndexPath   *theIndexPathOfSelectedItem =
+      NSIndexPath   *selectedPath =
          [self.collectionView indexPathForItemAtPoint:theLocationInCollectionView];
 
       if( [self.collectionView.delegate conformsToProtocol:@protocol( LXReorderableCollectionViewDelegateFlowLayout )])
       {
-         id<LXReorderableCollectionViewDelegateFlowLayout>   theDelegate =
+         id<LXReorderableCollectionViewDelegateFlowLayout>   delegate =
             (id<LXReorderableCollectionViewDelegateFlowLayout> )self.collectionView.delegate;
 
-         if( [theDelegate respondsToSelector:@selector( collectionView:layout:shouldBeginReorderingAtIndexPath: )])
+         if( [delegate respondsToSelector:@selector( collectionView:layout:shouldBeginReorderingAtIndexPath: )])
          {
             BOOL   shouldStartReorder =
-               [theDelegate collectionView:self.collectionView layout:self shouldBeginReorderingAtIndexPath:
-                theIndexPathOfSelectedItem];
+               [delegate collectionView:self.collectionView layout:self shouldBeginReorderingAtIndexPath:
+                selectedPath];
 
             if( ! shouldStartReorder)
                return;
          }
 
-         if( [theDelegate respondsToSelector:@selector( collectionView:layout:willBeginReorderingAtIndexPath: )])
-            [theDelegate collectionView:self.collectionView layout:self willBeginReorderingAtIndexPath:
-             theIndexPathOfSelectedItem];
+         if( [delegate respondsToSelector:@selector( collectionView:layout:willBeginReorderingAtIndexPath: )])
+            [delegate collectionView:self.collectionView layout:self willBeginReorderingAtIndexPath:
+             selectedPath];
       }
 
       UICollectionViewCell   *theCollectionViewCell =
-         [self.collectionView cellForItemAtIndexPath:theIndexPathOfSelectedItem];
+         [self.collectionView cellForItemAtIndexPath:selectedPath];
 
       theCollectionViewCell.highlighted = YES;
       UIGraphicsBeginImageContextWithOptions(theCollectionViewCell.bounds.size, theCollectionViewCell.opaque, 0.0f);
@@ -286,7 +294,7 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 
       [self.collectionView addSubview:theView];
 
-      self.selectedItemIndexPath = theIndexPathOfSelectedItem;
+      self.selectedItemIndexPath = selectedPath;
       self.currentView           = theView;
       self.currentViewCenter     = theView.center;
 
@@ -308,12 +316,12 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
           if( [self.collectionView.delegate conformsToProtocol:@protocol( LXReorderableCollectionViewDelegateFlowLayout )
               ])
           {
-             id<LXReorderableCollectionViewDelegateFlowLayout> theDelegate =
+             id<LXReorderableCollectionViewDelegateFlowLayout> delegate =
                 (id<LXReorderableCollectionViewDelegateFlowLayout> )self.collectionView.delegate;
 
-             if( [theDelegate respondsToSelector:@selector( collectionView:layout:didBeginReorderingAtIndexPath: )])
-                [theDelegate collectionView:self.collectionView layout:self didBeginReorderingAtIndexPath:
-                 theIndexPathOfSelectedItem];
+             if( [delegate respondsToSelector:@selector( collectionView:layout:didBeginReorderingAtIndexPath: )])
+                [delegate collectionView:self.collectionView layout:self didBeginReorderingAtIndexPath:
+                 selectedPath];
           }
        }];
 
@@ -322,25 +330,25 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 
    case UIGestureRecognizerStateEnded:
    {
-      NSIndexPath   *theIndexPathOfSelectedItem = self.selectedItemIndexPath;
+      NSIndexPath   *selectedPath = self.selectedItemIndexPath;
 
       if( [self.collectionView.delegate conformsToProtocol:@protocol( LXReorderableCollectionViewDelegateFlowLayout )])
       {
-         id<LXReorderableCollectionViewDelegateFlowLayout>   theDelegate =
+         id<LXReorderableCollectionViewDelegateFlowLayout>   delegate =
             (id<LXReorderableCollectionViewDelegateFlowLayout> )self.collectionView.delegate;
 
-         if( [theDelegate respondsToSelector:@selector( collectionView:layout:willEndReorderingAtIndexPath: )])
-            [theDelegate collectionView:self.collectionView layout:self willEndReorderingAtIndexPath:
-             theIndexPathOfSelectedItem];
+         if( [delegate respondsToSelector:@selector( collectionView:layout:willEndReorderingAtIndexPath: )])
+            [delegate collectionView:self.collectionView layout:self willEndReorderingAtIndexPath:
+             selectedPath];
       }
 
       self.selectedItemIndexPath = nil;
       self.currentViewCenter     = CGPointZero;
 
-      if( theIndexPathOfSelectedItem)
+      if( selectedPath)
       {
          UICollectionViewLayoutAttributes   *theLayoutAttributes =
-            [self layoutAttributesForItemAtIndexPath:theIndexPathOfSelectedItem];
+            [self layoutAttributesForItemAtIndexPath:selectedPath];
 
          __weak LXReorderableCollectionViewFlowLayout   *theWeakSelf = self;
          [UIView
@@ -362,12 +370,12 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
              if( [self.collectionView.delegate conformsToProtocol:@protocol(
                      LXReorderableCollectionViewDelegateFlowLayout )])
              {
-                id<LXReorderableCollectionViewDelegateFlowLayout> theDelegate =
+                id<LXReorderableCollectionViewDelegateFlowLayout> delegate =
                    (id<LXReorderableCollectionViewDelegateFlowLayout> )self.collectionView.delegate;
 
-                if( [theDelegate respondsToSelector:@selector( collectionView:layout:didEndReorderingAtIndexPath: )])
-                   [theDelegate collectionView:self.collectionView layout:self didEndReorderingAtIndexPath:
-                    theIndexPathOfSelectedItem];
+                if( [delegate respondsToSelector:@selector( collectionView:layout:didEndReorderingAtIndexPath: )])
+                   [delegate collectionView:self.collectionView layout:self didEndReorderingAtIndexPath:
+                    selectedPath];
              }
           }];
       }
@@ -388,33 +396,27 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 
 - (void) setupAutoScrollInDirection:(NSInteger) dir
 {
-   BOOL       flag;
    NSTimer    *timer;
-   
-   flag = YES;
+   NSInteger  oldDir;
    
    timer = [self scrollingTimer];
    
-   if( timer)
+   if( [timer isValid])
    {
-      if( [timer isValid])
-      {
-         flag = [[[timer userInfo] objectForKey:LXScrollingDirectionKey] integerValue] != dir;
-      }
+      oldDir = [[[timer userInfo] objectForKey:LXScrollingDirectionKey] integerValue];
+      if( dir == oldDir)
+         return;
    }
    
-   if( flag)
-   {
-      [self invalidateAutoScroll];
-      
-      timer = [NSTimer scheduledTimerWithTimeInterval:1.0 / LX_FRAMES_PER_SECOND
-                                               target:self
-                                             selector:@selector( handleScroll:)
-                                             userInfo:@{ LXScrollingDirectionKey : @( dir ) }
-                                              repeats:YES];
-      
-      [self setScrollingTimer:timer];
-   }
+   [self invalidateAutoScroll];
+   
+   timer = [NSTimer scheduledTimerWithTimeInterval:1.0 / LX_FRAMES_PER_SECOND
+                                            target:self
+                                          selector:@selector( handleScroll:)
+                                          userInfo:@{ LXScrollingDirectionKey : @( dir ) }
+                                           repeats:YES];
+   
+   [self setScrollingTimer:timer];
 }
 
 

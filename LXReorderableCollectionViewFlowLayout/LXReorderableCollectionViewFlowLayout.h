@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+
 @interface LXReorderableCollectionViewFlowLayout : UICollectionViewFlowLayout<UIGestureRecognizerDelegate>
 
 @property (assign, nonatomic) UIEdgeInsets   triggerScrollingEdgeInsets;
@@ -23,29 +24,44 @@
 
 @property (assign, nonatomic) BOOL   alwaysScroll;
 
+
 - (void) setUpGestureRecognizersOnCollectionView;
 
 @end
 
+
 @protocol LXReorderableCollectionViewDelegateFlowLayout<UICollectionViewDelegateFlowLayout>
 
-- (void) collectionView:(UICollectionView *) theCollectionView layout:(UICollectionViewLayout *) theLayout
-        itemAtIndexPath:(NSIndexPath *) theFromIndexPath willMoveToIndexPath:(NSIndexPath *) theToIndexPath;
+- (void) collectionView:(UICollectionView *) theCollectionView
+                 layout:(UICollectionViewLayout *) theLayout
+        itemAtIndexPath:(NSIndexPath *) theFromIndexPath
+    willMoveToIndexPath:(NSIndexPath *) theToIndexPath;
 
 @optional
 
-- (BOOL) collectionView:(UICollectionView *) theCollectionView layout:(UICollectionViewLayout *) theLayout
-        itemAtIndexPath:(NSIndexPath *) theFromIndexPath shouldMoveToIndexPath:(NSIndexPath *) theToIndexPath;
-- (BOOL)             collectionView:(UICollectionView *) theCollectionView layout:(UICollectionViewLayout *) theLayout
+- (BOOL) collectionView:(UICollectionView *) theCollectionView
+                 layout:(UICollectionViewLayout *) theLayout
+        itemAtIndexPath:(NSIndexPath *) theFromIndexPath
+  shouldMoveToIndexPath:(NSIndexPath *) theToIndexPath;
+
+- (BOOL) collectionView:(UICollectionView *) theCollectionView
+                 layout:(UICollectionViewLayout *) theLayout
    shouldBeginReorderingAtIndexPath:(NSIndexPath *) theIndexPath;
 
-- (void)           collectionView:(UICollectionView *) theCollectionView layout:(UICollectionViewLayout *) theLayout
+- (void) collectionView:(UICollectionView *) theCollectionView
+                 layout:(UICollectionViewLayout *) theLayout
    willBeginReorderingAtIndexPath:(NSIndexPath *) theIndexPath;
-- (void)          collectionView:(UICollectionView *) theCollectionView layout:(UICollectionViewLayout *) theLayout
+
+- (void) collectionView:(UICollectionView *) theCollectionView
+                 layout:(UICollectionViewLayout *) theLayout
    didBeginReorderingAtIndexPath:(NSIndexPath *) theIndexPath;
-- (void)         collectionView:(UICollectionView *) theCollectionView layout:(UICollectionViewLayout *) theLayout
+
+- (void) collectionView:(UICollectionView *) theCollectionView
+                 layout:(UICollectionViewLayout *) theLayout
    willEndReorderingAtIndexPath:(NSIndexPath *) theIndexPath;
-- (void)        collectionView:(UICollectionView *) theCollectionView layout:(UICollectionViewLayout *) theLayout
+
+- (void) collectionView:(UICollectionView *) theCollectionView
+                 layout:(UICollectionViewLayout *) theLayout
    didEndReorderingAtIndexPath:(NSIndexPath *) theIndexPath;
 
 @end
