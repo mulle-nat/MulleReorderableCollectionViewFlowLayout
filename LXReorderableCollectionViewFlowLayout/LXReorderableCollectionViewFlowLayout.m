@@ -14,7 +14,7 @@
 #ifndef CGGEOMETRY_LXSUPPORT_H_
 CG_INLINE CGPoint LXS_CGPointAdd(CGPoint thePoint1, CGPoint thePoint2)
 {
-   return(CGPointMake(thePoint1.x + thePoint2.x, thePoint1.y + thePoint2.y));
+   return( CGPointMake(thePoint1.x + thePoint2.x, thePoint1.y + thePoint2.y));
 }
 
 
@@ -90,9 +90,17 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
 }
 
 
+- (void) setSelectedItemIndexPath:(NSIndexPath *) path
+{
+   [selectedItemIndexPath_ autorelease];
+   selectedItemIndexPath_ = [path copy];
+}
+
+
 - (void) invalidateAutoScroll
 {
    [scrollingTimer_ invalidate];
+   [scrollingTimer_ release];
    scrollingTimer_ = nil;
 }
 
@@ -124,8 +132,8 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    
    collectionView = [self collectionView];
    
-   longPressGestureRecognizer_ = [[UILongPressGestureRecognizer alloc] initWithTarget:self
-                                                          action:@selector( handleLongPressGesture:)];
+   longPressGestureRecognizer_ = [[[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                action:@selector( handleLongPressGesture:)] autorelease];
 
    [longPressGestureRecognizer_ setDelegate:self];
    [collectionView addGestureRecognizer:longPressGestureRecognizer_];
@@ -140,8 +148,8 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    }
    
 
-   panGestureRecognizer_ = [[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                    action:@selector( handlePanGesture:)];
+   panGestureRecognizer_ = [[[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                                    action:@selector( handlePanGesture:)] autorelease];
    [panGestureRecognizer_ setDelegate:self];
    [collectionView addGestureRecognizer:panGestureRecognizer_];
 
@@ -160,6 +168,15 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
 }
 
 
+- (void) dealloc
+{
+   [self invalidateAutoScroll];
+   [selectedItemIndexPath_ release];
+   
+   [super dealloc];
+}
+
+
 #pragma mark - Custom methods
 
 - (void) applyLayoutAttributes:(UICollectionViewLayoutAttributes *) attributes
@@ -174,7 +191,7 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    NSIndexPath        *selectedPath;
    NSIndexPath        *previousPath;
    UICollectionView   *collectionView;
-   id<LXReorderableCollectionViewDelegateFlowLayout>   delegate;
+   id<LXReorderableCollectionViewDelegateFlowLayout> delegate;
    
    collectionView = [self collectionView];
    selectedPath   = [collectionView indexPathForItemAtPoint:[currentView_ center]];
@@ -183,8 +200,7 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    if( ! selectedPath || [selectedPath isEqual:previousPath])
       return;
    
-   [selectedItemIndexPath_ autorelease];
-   selectedItemIndexPath_ = [selectedPath copy];
+   [self setSelectedItemIndexPath:selectedPath];
    
    delegate = (id <LXReorderableCollectionViewDelegateFlowLayout> ) [collectionView delegate];
    if( [delegate conformsToProtocol:@protocol( LXReorderableCollectionViewDelegateFlowLayout)])
@@ -300,34 +316,36 @@ typedef struct
 
 
 - (void) constructViews:(reorder_views_context *) ctxt
-               withCell:(UICollectionViewCell *) theCollectionViewCell
+               withCell:(UICollectionViewCell *) collectionViewCell
 {
    UIImage   *theHighlightedImage;
    UIImage   *theImage;
    BOOL      flag;
    
    memset( ctxt, 0, sizeof( *ctxt));
-   flag = [theCollectionViewCell isHighlighted];
    
-   [theCollectionViewCell setHighlighted:NO];
-   theImage = [theCollectionViewCell renderedImage];
-
-   [theCollectionViewCell setHighlighted:YES];
-   theHighlightedImage = [theCollectionViewCell renderedImage];
-
-   [theCollectionViewCell setHighlighted:flag];
+   flag = [collectionViewCell isHighlighted];
    
-   ctxt->theImageView = [[UIImageView alloc] initWithImage:theImage];
+   [collectionViewCell setHighlighted:NO];
+   theImage = [collectionViewCell renderedImage];
+
+   [collectionViewCell setHighlighted:YES];
+   theHighlightedImage = [collectionViewCell renderedImage];
+
+   [collectionViewCell setHighlighted:flag];
+
+   
+   ctxt->theImageView = [[[UIImageView alloc] initWithImage:theImage] autorelease];
    [ctxt->theImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];    // Not using constraints, lets auto resizing mask be translated automatically...
    
-   ctxt->theHighlightedImageView = [[UIImageView alloc] initWithImage:theHighlightedImage];
+   ctxt->theHighlightedImageView = [[[UIImageView alloc] initWithImage:theHighlightedImage] autorelease];
    [ctxt->theHighlightedImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];    // Not using constraints, lets auto resizing mask be translated automatically...
    
    ctxt->theView =
-   [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMinX(theCollectionViewCell.frame),
-                                            CGRectGetMinY(theCollectionViewCell.frame),
-                                            CGRectGetWidth(ctxt->theImageView.frame),
-                                            CGRectGetHeight(ctxt->theImageView.frame))];
+   [[[UIView alloc] initWithFrame:CGRectMake( CGRectGetMinX(collectionViewCell.frame),
+                                              CGRectGetMinY(collectionViewCell.frame),
+                                              CGRectGetWidth(ctxt->theImageView.frame),
+                                              CGRectGetHeight(ctxt->theImageView.frame))] autorelease];
    
    [ctxt->theView addSubview:ctxt->theImageView];
    [ctxt->theView addSubview:ctxt->theHighlightedImageView];
@@ -343,7 +361,6 @@ typedef struct
       return( nil);
    return( delegate);
 }
-
 
 
 - (void) highlight:(reorder_views_context *) ctxt
@@ -405,7 +422,7 @@ typedef struct
 {
    NSIndexPath             *selectedPath;
    UICollectionView        *collectionView;
-   UICollectionViewCell    *theCollectionViewCell;
+   UICollectionViewCell    *collectionViewCell;
    reorder_views_context   ctxt;
    CGPoint                 location;
    id <LXReorderableCollectionViewDelegateFlowLayout>   delegate;
@@ -415,7 +432,7 @@ typedef struct
    switch( [recognizer state])
    {
    case UIGestureRecognizerStateBegan:
-      location     = [recognizer locationInView:self.collectionView];
+      location     = [recognizer locationInView:collectionView];
       selectedPath = [collectionView indexPathForItemAtPoint:location];
       delegate     = [self lxDelegate];
          
@@ -434,16 +451,15 @@ typedef struct
    willBeginReorderingAtIndexPath:selectedPath];
       }
          
-      theCollectionViewCell = [[self collectionView] cellForItemAtIndexPath:selectedPath];
+      collectionViewCell = [[self collectionView] cellForItemAtIndexPath:selectedPath];
        
       [self constructViews:&ctxt
-                  withCell:theCollectionViewCell];
+                  withCell:collectionViewCell];
          
       [[self collectionView] addSubview:ctxt.theView];
 
       // ugh!
-      [self->selectedItemIndexPath_ autorelease];
-      self->selectedItemIndexPath_ = [selectedPath copy];
+      [self setSelectedItemIndexPath:selectedPath];
 
       self->currentView_           = ctxt.theView;
       self->currentViewCenter_     = [ctxt.theView center];
@@ -469,12 +485,11 @@ typedef struct
       delegate     = [self lxDelegate];
          
       if( [delegate respondsToSelector:@selector( collectionView:layout:willEndReorderingAtIndexPath: )])
-         [delegate collectionView:self.collectionView
+         [delegate collectionView:collectionView
                            layout:self
      willEndReorderingAtIndexPath:selectedPath];
 
-      [self->selectedItemIndexPath_ autorelease];
-      self->selectedItemIndexPath_ = nil;
+      [self setSelectedItemIndexPath:nil];
       self->currentViewCenter_     = CGPointZero;
 
       if( selectedPath)
@@ -503,10 +518,11 @@ typedef struct
    {
    case UIGestureRecognizerStateBegan   :
    case UIGestureRecognizerStateChanged :
-      translation = [recognizer translationInView:self.collectionView];
+      collectionView = [self collectionView];
+      translation    = [recognizer translationInView:collectionView];
 
-      location    = LXS_CGPointAdd( currentViewCenter_,
-                                    panTranslationInCollectionView_);
+      location       = LXS_CGPointAdd( currentViewCenter_,
+                                      panTranslationInCollectionView_);
 
       panTranslationInCollectionView_ = translation;
       [currentView_ setCenter:location];
@@ -514,7 +530,6 @@ typedef struct
       [self invalidateLayoutIfNecessary];
    
       insets         = triggerScrollingEdgeInsets_;
-      collectionView = [self collectionView];
       bounds         = [collectionView bounds];
       
       switch( [self scrollDirection])

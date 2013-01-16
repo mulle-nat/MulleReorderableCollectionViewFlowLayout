@@ -1,4 +1,15 @@
-a fork to make it maintainable by myself
+Beware!! 
+
+I turned a nice decent iOS project, into (almost) old man's ObjC-1.0 code. 
+The beautiful long variable names are gone, and the nice ObjC-2.0 magic
+has been reduced to minimum.
+
+It sucks now, so don't use it :)
+
+Har har
+
+Nat!
+
 
 LXReorderableCollectionViewFlowLayout
 =====================================
