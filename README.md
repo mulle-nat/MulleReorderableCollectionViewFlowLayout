@@ -63,9 +63,9 @@ Requirements
 Credits
 =======
 
-MulleReorderableCollectionViewFlowLayout is a fork and a rewrite of LXReorderableCollectionViewFlowLayout by Nat!.
+[MulleReorderableCollectionViewFlowLayout](https://github.com/mulle-nat/MulleReorderableCollectionViewFlowLayout) is a fork and a rewrite of LXReorderableCollectionViewFlowLayout by Nat!.
 
-LXReorderableCollectionViewFlowLayout was created by [Stan Chang Khin Boon](https://github.com/Mullecid) as part of a project under [buUuk](http://www.buuuk.com/).
+LXReorderableCollectionViewFlowLayout was created by [Stan Chang Khin Boon](https://github.com/lxcid) as part of a project under [buUuk](http://www.buuuk.com/).
 
 Many thanks to __MaximilianL__ in the [Apple Developer Forums for sharing his implementation](https://devforums.apple.com/message/682764) which lead him to this project.
 
