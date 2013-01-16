@@ -29,7 +29,7 @@ The goal of MulleReorderableCollectionViewFlowLayout is to provides capability f
 Getting Started
 ===============
 
-<img src="https://raw.github.com/Mullecid/LXReorderableCollectionViewFlowLayout/master/Content/Screenshots/screenshot1.png" alt="Screenshot" title="Screenshot" style="display:block; margin: 10px auto 30px auto; width: 300px; height: 400px;" class="center">
+<img src="https://raw.github.com/lxcid/LXReorderableCollectionViewFlowLayout/master/Content/Screenshots/screenshot1.png" alt="Screenshot" title="Screenshot" style="display:block; margin: 10px auto 30px auto; width: 300px; height: 400px;" class="center">
 
  1. Drag the `MulleReorderableCollectionViewFlowLayout` folder into your project.
  2. Initialize/Setup your collection view to use `MulleReorderableCollectionViewFlowLayout`.
@@ -63,9 +63,9 @@ Requirements
 Credits
 =======
 
-MulleReorderableCollectionViewFlowLayout is a fork of LXReorderableCollectionViewFlowLayout.
+[MulleReorderableCollectionViewFlowLayout](https://github.com/mulle-nat/MulleReorderableCollectionViewFlowLayout) is a fork and a rewrite of LXReorderableCollectionViewFlowLayout by Nat!.
 
-LXReorderableCollectionViewFlowLayout was created by [Stan Chang Khin Boon](https://github.com/Mullecid) as part of a project under [buUuk](http://www.buuuk.com/).
+LXReorderableCollectionViewFlowLayout was created by [Stan Chang Khin Boon](https://github.com/lxcid) as part of a project under [buUuk](http://www.buuuk.com/).
 
 Many thanks to __MaximilianL__ in the [Apple Developer Forums for sharing his implementation](https://devforums.apple.com/message/682764) which lead him to this project.
 
@@ -81,7 +81,5 @@ README.md structure is heavily referenced from [AFNetworking](https://github.com
 License
 =======
 
-MulleReorderableCollectionViewFlowLayout is available under the MIT license.
-========================================
+__MulleReorderableCollectionViewFlowLayout__ is available under the [MIT License](http://opensource.org/licenses/MIT).
 
-A fork of LXReorderableCollectionViewFlowLayout, that doesn't require ARC
