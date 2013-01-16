@@ -63,7 +63,7 @@ Requirements
 Credits
 =======
 
-MulleReorderableCollectionViewFlowLayout is a fork of LXReorderableCollectionViewFlowLayout.
+MulleReorderableCollectionViewFlowLayout is a fork and a rewrite of LXReorderableCollectionViewFlowLayout by Nat!.
 
 LXReorderableCollectionViewFlowLayout was created by [Stan Chang Khin Boon](https://github.com/Mullecid) as part of a project under [buUuk](http://www.buuuk.com/).
 
