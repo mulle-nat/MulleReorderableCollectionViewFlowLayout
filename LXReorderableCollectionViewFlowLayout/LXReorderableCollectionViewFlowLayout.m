@@ -19,14 +19,14 @@ CG_INLINE CGPoint LXS_CGPointAdd(CGPoint thePoint1, CGPoint thePoint2)
 
 #endif
 
-typedef NS_ENUM (NSInteger, LXReorderableCollectionViewFlowLayoutScrollingDirection) {
-   LXReorderableCollectionViewFlowLayoutScrollingDirectionUp = 1,
-   LXReorderableCollectionViewFlowLayoutScrollingDirectionDown,
-   LXReorderableCollectionViewFlowLayoutScrollingDirectionLeft,
-   LXReorderableCollectionViewFlowLayoutScrollingDirectionRight
+typedef NS_ENUM (NSInteger, LXDirection) {
+   LXUp = 1,
+   LXDown,
+   LXLeft,
+   LXRight
 };
 
-static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey = @"LXScrollingDirection";
+static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 
 
 
@@ -58,31 +58,35 @@ static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectio
 
 - (void) setUpGestureRecognizersOnCollectionView
 {
-   UILongPressGestureRecognizer   *theLongPressGestureRecognizer =
-      [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector( handleLongPressGesture: )];
+   UILongPressGestureRecognizer   *longer;
+   UIPanGestureRecognizer         *panner;
+   
+   longer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                          action:@selector( handleLongPressGesture:)];
 
    // Links the default long press gesture recognizer to the custom long press gesture recognizer we are creating now
    // by enforcing failure dependency so that they doesn't clash.
    for( UIGestureRecognizer *recognizer in self.collectionView.gestureRecognizers)
    {
       if( [recognizer isKindOfClass:[UILongPressGestureRecognizer class]])
-         [recognizer requireGestureRecognizerToFail:theLongPressGestureRecognizer];
+         [recognizer requireGestureRecognizerToFail:longer];
    }
 
-   theLongPressGestureRecognizer.delegate = self;
-   [self.collectionView addGestureRecognizer:theLongPressGestureRecognizer];
-   self.longPressGestureRecognizer = theLongPressGestureRecognizer;
+   longer.delegate = self;
+   [self.collectionView addGestureRecognizer:longer];
+   self.longPressGestureRecognizer = longer;
 
-   UIPanGestureRecognizer   *thePanGestureRecognizer =
-      [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector( handlePanGesture: )];
-   thePanGestureRecognizer.delegate = self;
-   [self.collectionView addGestureRecognizer:thePanGestureRecognizer];
-   self.panGestureRecognizer = thePanGestureRecognizer;
+   panner =  [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                     action:@selector( handlePanGesture: )];
+   panner.delegate = self;
+   [self.collectionView addGestureRecognizer:panner];
+   self.panGestureRecognizer = panner;
 
    self.triggerScrollingEdgeInsets = UIEdgeInsetsMake(50.0f, 50.0f, 50.0f, 50.0f);
    self.scrollingSpeed             = 300.0f;
-   [self.scrollingTimer invalidate];
-   self.scrollingTimer = nil;
+
+   [self invalidateAutoScroll];
+
    self.alwaysScroll   = YES;
 }
 
@@ -149,14 +153,12 @@ static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectio
 
 - (void) handleScroll:(NSTimer *) theTimer
 {
-   LXReorderableCollectionViewFlowLayoutScrollingDirection   theScrollingDirection =
-      (LXReorderableCollectionViewFlowLayoutScrollingDirection)[theTimer.userInfo[
-                                                                   kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey
-                                                                ] integerValue];
+   LXDirection   theScrollingDirection =
+      (LXDirection) [theTimer.userInfo[ LXScrollingDirectionKey] integerValue];
 
    switch( theScrollingDirection)
    {
-   case LXReorderableCollectionViewFlowLayoutScrollingDirectionUp:
+   case LXUp:
    {
       CGFloat   theDistance      = -(self.scrollingSpeed / LX_FRAMES_PER_SECOND);
       CGPoint   theContentOffset = self.collectionView.contentOffset;
@@ -170,7 +172,7 @@ static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectio
       self.currentView.center           = LXS_CGPointAdd(self.currentViewCenter, self.panTranslationInCollectionView);
    } break;
 
-   case LXReorderableCollectionViewFlowLayoutScrollingDirectionDown:
+   case LXDown:
    {
       CGFloat   theDistance      = (self.scrollingSpeed / LX_FRAMES_PER_SECOND);
       CGPoint   theContentOffset = self.collectionView.contentOffset;
@@ -186,7 +188,7 @@ static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectio
       self.currentView.center           = LXS_CGPointAdd(self.currentViewCenter, self.panTranslationInCollectionView);
    } break;
 
-   case LXReorderableCollectionViewFlowLayoutScrollingDirectionLeft:
+   case LXLeft:
    {
       CGFloat   theDistance      = -(self.scrollingSpeed / LX_FRAMES_PER_SECOND);
       CGPoint   theContentOffset = self.collectionView.contentOffset;
@@ -200,7 +202,7 @@ static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectio
       self.currentView.center           = LXS_CGPointAdd(self.currentViewCenter, self.panTranslationInCollectionView);
    } break;
 
-   case LXReorderableCollectionViewFlowLayoutScrollingDirectionRight:
+   case LXRight:
    {
       CGFloat   theDistance      = (self.scrollingSpeed / LX_FRAMES_PER_SECOND);
       CGPoint   theContentOffset = self.collectionView.contentOffset;
@@ -377,179 +379,100 @@ static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectio
 }
 
 
-- (void) handlePanGesture:(UIPanGestureRecognizer *) thePanGestureRecognizer
+- (void) invalidateAutoScroll
 {
-   switch( thePanGestureRecognizer.state)
+   [[self scrollingTimer] invalidate];
+   [self setScrollingTimer:nil];
+}
+
+
+- (void) setupAutoScrollInDirection:(NSInteger) dir
+{
+   BOOL       flag;
+   NSTimer    *timer;
+   
+   flag = YES;
+   
+   timer = [self scrollingTimer];
+   
+   if( timer)
    {
-   case UIGestureRecognizerStateBegan:
-   case UIGestureRecognizerStateChanged:
+      if( [timer isValid])
+      {
+         flag = [[[timer userInfo] objectForKey:LXScrollingDirectionKey] integerValue] != dir;
+      }
+   }
+   
+   if( flag)
    {
-      CGPoint   theTranslationInCollectionView = [thePanGestureRecognizer translationInView:self.collectionView];
-      self.panTranslationInCollectionView = theTranslationInCollectionView;
-      CGPoint   theLocationInCollectionView =
-         LXS_CGPointAdd(self.currentViewCenter, self.panTranslationInCollectionView);
-      self.currentView.center = theLocationInCollectionView;
+      [self invalidateAutoScroll];
+      
+      timer = [NSTimer scheduledTimerWithTimeInterval:1.0 / LX_FRAMES_PER_SECOND
+                                               target:self
+                                             selector:@selector( handleScroll:)
+                                             userInfo:@{ LXScrollingDirectionKey : @( dir ) }
+                                              repeats:YES];
+      
+      [self setScrollingTimer:timer];
+   }
+}
 
-      [self invalidateLayoutIfNecessary];
 
-      switch( self.scrollDirection)
+- (void) handlePanGesture:(UIPanGestureRecognizer *) recognizer
+{
+   CGPoint        translation;
+   CGPoint        location;
+   UIEdgeInsets   insets;
+   UICollectionView   *collectionView;
+   CGRect          bounds;
+   
+   switch( [recognizer state])
+   {
+      case UIGestureRecognizerStateBegan   :
+      case UIGestureRecognizerStateChanged :
       {
-      case UICollectionViewScrollDirectionVertical:
+         translation = [recognizer translationInView:self.collectionView];
+         location = LXS_CGPointAdd(self.currentViewCenter, self.panTranslationInCollectionView);
 
-         if( theLocationInCollectionView.y <
-             (CGRectGetMinY(self.collectionView.bounds) + self.triggerScrollingEdgeInsets.top))
+         self.panTranslationInCollectionView = translation;
+         self.currentView.center = location;
+         
+         [self invalidateLayoutIfNecessary];
+   
+         insets         = [self triggerScrollingEdgeInsets];
+         collectionView = [self collectionView];
+         bounds         = [collectionView bounds];
+         
+         switch( [self scrollDirection])
          {
-            BOOL   isScrollingTimerSetUpNeeded = YES;
-
-            if( self.scrollingTimer)
-            {
-               if( self.scrollingTimer.isValid)
-                  isScrollingTimerSetUpNeeded =
-                     ([self.scrollingTimer.userInfo[kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey]
-                       integerValue] != LXReorderableCollectionViewFlowLayoutScrollingDirectionUp);
-            }
-
-            if( isScrollingTimerSetUpNeeded)
-            {
-               if( self.scrollingTimer)
-               {
-                  [self.scrollingTimer invalidate];
-                  self.scrollingTimer = nil;
-               }
-
-               self.scrollingTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 / LX_FRAMES_PER_SECOND
-                                      target:self
-                                      selector:@selector( handleScroll: )
-                                      userInfo:@{ kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey : @(
-                                                     LXReorderableCollectionViewFlowLayoutScrollingDirectionUp) }
-                                      repeats:YES];
-            }
+            case UICollectionViewScrollDirectionVertical :
+               if( location.y < (CGRectGetMinY( bounds) + insets.top))
+                  [self setupAutoScrollInDirection:LXUp];
+               else
+                  if( location.y > (CGRectGetMaxY( bounds) - insets.bottom))
+                     [self setupAutoScrollInDirection:LXDown];
+                  else
+                     [self invalidateAutoScroll];
+               
+               break;
+               
+            case UICollectionViewScrollDirectionHorizontal :
+               if( location.x < (CGRectGetMinX( bounds) + insets.left))
+                  [self setupAutoScrollInDirection:LXLeft];
+               else
+                  if( location.x > (CGRectGetMaxX( bounds) - insets.right))
+                     [self setupAutoScrollInDirection:LXRight];
+                  else
+                     [self invalidateAutoScroll];
+               
+               break;
          }
-         else if( theLocationInCollectionView.y >
-                  (CGRectGetMaxY(self.collectionView.bounds) - self.triggerScrollingEdgeInsets.bottom))
-         {
-            BOOL   isScrollingTimerSetUpNeeded = YES;
-
-            if( self.scrollingTimer)
-            {
-               if( self.scrollingTimer.isValid)
-                  isScrollingTimerSetUpNeeded =
-                     ([self.scrollingTimer.userInfo[kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey]
-                       integerValue] != LXReorderableCollectionViewFlowLayoutScrollingDirectionDown);
-            }
-
-            if( isScrollingTimerSetUpNeeded)
-            {
-               if( self.scrollingTimer)
-               {
-                  [self.scrollingTimer invalidate];
-                  self.scrollingTimer = nil;
-               }
-
-               self.scrollingTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 / LX_FRAMES_PER_SECOND
-                                      target:self
-                                      selector:@selector( handleScroll: )
-                                      userInfo:@{ kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey : @(
-                                                     LXReorderableCollectionViewFlowLayoutScrollingDirectionDown) }
-                                      repeats:YES];
-            }
-         }
-         else
-         {
-            if( self.scrollingTimer)
-            {
-               [self.scrollingTimer invalidate];
-               self.scrollingTimer = nil;
-            }
-         }
-
-         break;
-
-      case UICollectionViewScrollDirectionHorizontal:
-
-         if( theLocationInCollectionView.x <
-             (CGRectGetMinX(self.collectionView.bounds) + self.triggerScrollingEdgeInsets.left))
-         {
-            BOOL   isScrollingTimerSetUpNeeded = YES;
-
-            if( self.scrollingTimer)
-            {
-               if( self.scrollingTimer.isValid)
-                  isScrollingTimerSetUpNeeded =
-                     ([self.scrollingTimer.userInfo[kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey]
-                       integerValue] != LXReorderableCollectionViewFlowLayoutScrollingDirectionLeft);
-            }
-
-            if( isScrollingTimerSetUpNeeded)
-            {
-               if( self.scrollingTimer)
-               {
-                  [self.scrollingTimer invalidate];
-                  self.scrollingTimer = nil;
-               }
-
-               self.scrollingTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 / LX_FRAMES_PER_SECOND
-                                      target:self
-                                      selector:@selector( handleScroll: )
-                                      userInfo:@{ kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey : @(
-                                                     LXReorderableCollectionViewFlowLayoutScrollingDirectionLeft) }
-                                      repeats:YES];
-            }
-         }
-         else if( theLocationInCollectionView.x >
-                  (CGRectGetMaxX(self.collectionView.bounds) - self.triggerScrollingEdgeInsets.right))
-         {
-            BOOL   isScrollingTimerSetUpNeeded = YES;
-
-            if( self.scrollingTimer)
-            {
-               if( self.scrollingTimer.isValid)
-                  isScrollingTimerSetUpNeeded =
-                     ([self.scrollingTimer.userInfo[kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey]
-                       integerValue] != LXReorderableCollectionViewFlowLayoutScrollingDirectionRight);
-            }
-
-            if( isScrollingTimerSetUpNeeded)
-            {
-               if( self.scrollingTimer)
-               {
-                  [self.scrollingTimer invalidate];
-                  self.scrollingTimer = nil;
-               }
-
-               self.scrollingTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 / LX_FRAMES_PER_SECOND
-                                      target:self
-                                      selector:@selector( handleScroll: )
-                                      userInfo:@{ kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey : @(
-                                                     LXReorderableCollectionViewFlowLayoutScrollingDirectionRight) }
-                                      repeats:YES];
-            }
-         }
-         else
-         {
-            if( self.scrollingTimer)
-            {
-               [self.scrollingTimer invalidate];
-               self.scrollingTimer = nil;
-            }
-         }
-
-         break;
       }
-   } break;
-
-   case UIGestureRecognizerStateEnded:
-
-      if( self.scrollingTimer)
-      {
-         [self.scrollingTimer invalidate];
-         self.scrollingTimer = nil;
-      }
-
-      break;
-
-   default:
-      break;
+         break;
+         
+      case UIGestureRecognizerStateEnded:
+         [self invalidateAutoScroll];
+         break;
    }
 }
 
@@ -563,7 +486,7 @@ static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectio
 
    array = [super layoutAttributesForElementsInRect:theRect];
    
-   [array makeObjectsPerformSelector:@selector( applyLayoutAttributesIfNeeded:)
+   [array makeObjectsPerformSelector:@selector( applyToLayoutIfNeeded:)
                                     withObject:self];
    return( array);
 }
