@@ -12,9 +12,9 @@
 
 @interface PlayingCardCell : UICollectionViewCell
 
-@property (weak, nonatomic) PlayingCard *playingCard;
+@property (assign, nonatomic) PlayingCard *playingCard;
 
-@property (weak, nonatomic) IBOutlet UIImageView *playingCardImageView;
+@property (assign, nonatomic) IBOutlet UIImageView *playingCardImageView;
 
 
 @end

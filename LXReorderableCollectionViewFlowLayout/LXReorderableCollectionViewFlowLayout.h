@@ -8,26 +8,31 @@
 #import <UIKit/UIKit.h>
 
 
-@interface LXReorderableCollectionViewFlowLayout : UICollectionViewFlowLayout<UIGestureRecognizerDelegate>
+@interface LXReorderableCollectionViewFlowLayout : UICollectionViewFlowLayout < UIGestureRecognizerDelegate>
+{
+   NSTimer        *scrollingTimer_;
+   NSIndexPath    *selectedItemIndexPath_;
 
-@property (assign, nonatomic) UIEdgeInsets   triggerScrollingEdgeInsets;
-@property (assign, nonatomic) CGFloat        scrollingSpeed;
-@property (strong, nonatomic) NSTimer        *scrollingTimer;
+   UIEdgeInsets   triggerScrollingEdgeInsets_;
+   CGFloat        scrollingSpeed_;
+   CGPoint        currentViewCenter_;
+   CGPoint        panTranslationInCollectionView_;
+   
+   // non-retained
 
-@property (weak, nonatomic) UILongPressGestureRecognizer   *longPressGestureRecognizer;
-@property (weak, nonatomic) UIPanGestureRecognizer         *panGestureRecognizer;
-
-@property (strong, nonatomic) NSIndexPath   *selectedItemIndexPath;
-@property (weak, nonatomic) UIView          *currentView;
-@property (assign, nonatomic) CGPoint       currentViewCenter;
-@property (assign, nonatomic) CGPoint       panTranslationInCollectionView;
-
-@property (assign, nonatomic) BOOL   alwaysScroll;
+   UILongPressGestureRecognizer   *longPressGestureRecognizer_;
+   UIPanGestureRecognizer         *panGestureRecognizer_;
+   
+   UIView         *currentView_;
+   
+   BOOL           alwaysScroll_;
+}
 
 
 - (void) setUpGestureRecognizersOnCollectionView;
 
 @end
+
 
 
 @protocol LXReorderableCollectionViewDelegateFlowLayout<UICollectionViewDelegateFlowLayout>
