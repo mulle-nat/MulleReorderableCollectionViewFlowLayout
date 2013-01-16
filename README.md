@@ -29,7 +29,7 @@ The goal of MulleReorderableCollectionViewFlowLayout is to provides capability f
 Getting Started
 ===============
 
-<img src="https://raw.github.com/Mullecid/LXReorderableCollectionViewFlowLayout/master/Content/Screenshots/screenshot1.png" alt="Screenshot" title="Screenshot" style="display:block; margin: 10px auto 30px auto; width: 300px; height: 400px;" class="center">
+<img src="https://raw.github.com/lxcid/LXReorderableCollectionViewFlowLayout/master/Content/Screenshots/screenshot1.png" alt="Screenshot" title="Screenshot" style="display:block; margin: 10px auto 30px auto; width: 300px; height: 400px;" class="center">
 
  1. Drag the `MulleReorderableCollectionViewFlowLayout` folder into your project.
  2. Initialize/Setup your collection view to use `MulleReorderableCollectionViewFlowLayout`.
@@ -81,7 +81,7 @@ README.md structure is heavily referenced from [AFNetworking](https://github.com
 License
 =======
 
-MulleReorderableCollectionViewFlowLayout is available under the MIT license.
+MulleReorderableCollectionViewFlowLayout 
 ========================================
+is available under the MIT license.
 
-A fork of LXReorderableCollectionViewFlowLayout, that doesn't require ARC
