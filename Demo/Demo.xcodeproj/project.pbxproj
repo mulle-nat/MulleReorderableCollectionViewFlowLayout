@@ -17,34 +17,34 @@
 		AB0E97DB161B4BEC005498A0 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AB0E97DA161B4BEC005498A0 /* Default@2x.png */; };
 		AB0E97DD161B4BEC005498A0 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AB0E97DC161B4BEC005498A0 /* Default-568h@2x.png */; };
 		AB0E97E0161B4BEC005498A0 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB0E97DE161B4BEC005498A0 /* MainStoryboard.storyboard */; };
-		AB0E97EB161B4C3C005498A0 /* LXCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0E97EA161B4C3C005498A0 /* LXCollectionViewController.m */; };
+		AB0E97EB161B4C3C005498A0 /* MulleCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0E97EA161B4C3C005498A0 /* MulleCollectionViewController.m */; };
 		AB0E97EE161B525D005498A0 /* PlayingCard.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0E97ED161B525D005498A0 /* PlayingCard.m */; };
-		AB0E97F3161B52D4005498A0 /* LXReorderableCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0E97F2161B52D4005498A0 /* LXReorderableCollectionViewFlowLayout.m */; };
+		AB0E97F3161B52D4005498A0 /* MulleReorderableCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0E97F2161B52D4005498A0 /* MulleReorderableCollectionViewFlowLayout.m */; };
 		AB0E97F6161B561F005498A0 /* PlayingCardCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0E97F5161B561F005498A0 /* PlayingCardCell.m */; };
 		AB0E97F8161B5DC6005498A0 /* Content in Resources */ = {isa = PBXBuildFile; fileRef = AB0E97F7161B5DC6005498A0 /* Content */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AB0E97C2161B4BEC005498A0 /* LXRCVFL Example using Storyboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LXRCVFL Example using Storyboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB0E97C2161B4BEC005498A0 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB0E97C6161B4BEC005498A0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		AB0E97C8161B4BEC005498A0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AB0E97CA161B4BEC005498A0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		AB0E97CE161B4BEC005498A0 /* LXRCVFL Example using Storyboard-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LXRCVFL Example using Storyboard-Info.plist"; sourceTree = "<group>"; };
+		AB0E97CE161B4BEC005498A0 /* Demo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Demo-Info.plist"; sourceTree = "<group>"; };
 		AB0E97D0161B4BEC005498A0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AB0E97D2161B4BEC005498A0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		AB0E97D4161B4BEC005498A0 /* LXRCVFL Example using Storyboard-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LXRCVFL Example using Storyboard-Prefix.pch"; sourceTree = "<group>"; };
+		AB0E97D4161B4BEC005498A0 /* Demo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Demo-Prefix.pch"; sourceTree = "<group>"; };
 		AB0E97D5161B4BEC005498A0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		AB0E97D6161B4BEC005498A0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		AB0E97D8161B4BEC005498A0 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		AB0E97DA161B4BEC005498A0 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		AB0E97DC161B4BEC005498A0 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		AB0E97DF161B4BEC005498A0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
-		AB0E97E9161B4C3C005498A0 /* LXCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LXCollectionViewController.h; sourceTree = "<group>"; };
-		AB0E97EA161B4C3C005498A0 /* LXCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LXCollectionViewController.m; sourceTree = "<group>"; };
+		AB0E97E9161B4C3C005498A0 /* MulleCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MulleCollectionViewController.h; sourceTree = "<group>"; };
+		AB0E97EA161B4C3C005498A0 /* MulleCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MulleCollectionViewController.m; sourceTree = "<group>"; };
 		AB0E97EC161B525D005498A0 /* PlayingCard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayingCard.h; sourceTree = "<group>"; };
 		AB0E97ED161B525D005498A0 /* PlayingCard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayingCard.m; sourceTree = "<group>"; };
-		AB0E97F1161B52D4005498A0 /* LXReorderableCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LXReorderableCollectionViewFlowLayout.h; sourceTree = "<group>"; };
-		AB0E97F2161B52D4005498A0 /* LXReorderableCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LXReorderableCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		AB0E97F1161B52D4005498A0 /* MulleReorderableCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MulleReorderableCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		AB0E97F2161B52D4005498A0 /* MulleReorderableCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MulleReorderableCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		AB0E97F4161B561F005498A0 /* PlayingCardCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayingCardCell.h; sourceTree = "<group>"; };
 		AB0E97F5161B561F005498A0 /* PlayingCardCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayingCardCell.m; sourceTree = "<group>"; };
 		AB0E97F7161B5DC6005498A0 /* Content */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Content; path = ../Content; sourceTree = "<group>"; };
@@ -69,7 +69,7 @@
 			children = (
 				AB0E97F7161B5DC6005498A0 /* Content */,
 				AB0E97EF161B52C1005498A0 /* Vendors */,
-				AB0E97CC161B4BEC005498A0 /* LXRCVFL Example using Storyboard */,
+				AB0E97CC161B4BEC005498A0 /* src */,
 				AB0E97C5161B4BEC005498A0 /* Frameworks */,
 				AB0E97C3161B4BEC005498A0 /* Products */,
 			);
@@ -78,7 +78,7 @@
 		AB0E97C3161B4BEC005498A0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AB0E97C2161B4BEC005498A0 /* LXRCVFL Example using Storyboard.app */,
+				AB0E97C2161B4BEC005498A0 /* Demo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -93,30 +93,30 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		AB0E97CC161B4BEC005498A0 /* LXRCVFL Example using Storyboard */ = {
+		AB0E97CC161B4BEC005498A0 /* src */ = {
 			isa = PBXGroup;
 			children = (
 				AB0E97D5161B4BEC005498A0 /* AppDelegate.h */,
 				AB0E97D6161B4BEC005498A0 /* AppDelegate.m */,
 				AB0E97DE161B4BEC005498A0 /* MainStoryboard.storyboard */,
 				AB0E97CD161B4BEC005498A0 /* Supporting Files */,
-				AB0E97E9161B4C3C005498A0 /* LXCollectionViewController.h */,
-				AB0E97EA161B4C3C005498A0 /* LXCollectionViewController.m */,
+				AB0E97E9161B4C3C005498A0 /* MulleCollectionViewController.h */,
+				AB0E97EA161B4C3C005498A0 /* MulleCollectionViewController.m */,
 				AB0E97EC161B525D005498A0 /* PlayingCard.h */,
 				AB0E97ED161B525D005498A0 /* PlayingCard.m */,
 				AB0E97F4161B561F005498A0 /* PlayingCardCell.h */,
 				AB0E97F5161B561F005498A0 /* PlayingCardCell.m */,
 			);
-			path = "LXRCVFL Example using Storyboard";
+			path = src;
 			sourceTree = "<group>";
 		};
 		AB0E97CD161B4BEC005498A0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				AB0E97CE161B4BEC005498A0 /* LXRCVFL Example using Storyboard-Info.plist */,
+				AB0E97CE161B4BEC005498A0 /* Demo-Info.plist */,
 				AB0E97CF161B4BEC005498A0 /* InfoPlist.strings */,
 				AB0E97D2161B4BEC005498A0 /* main.m */,
-				AB0E97D4161B4BEC005498A0 /* LXRCVFL Example using Storyboard-Prefix.pch */,
+				AB0E97D4161B4BEC005498A0 /* Demo-Prefix.pch */,
 				AB0E97D8161B4BEC005498A0 /* Default.png */,
 				AB0E97DA161B4BEC005498A0 /* Default@2x.png */,
 				AB0E97DC161B4BEC005498A0 /* Default-568h@2x.png */,
@@ -127,27 +127,27 @@
 		AB0E97EF161B52C1005498A0 /* Vendors */ = {
 			isa = PBXGroup;
 			children = (
-				AB0E97F0161B52D4005498A0 /* LXReorderableCollectionViewFlowLayout */,
+				AB0E97F0161B52D4005498A0 /* MulleReorderableCollectionViewFlowLayout */,
 			);
 			name = Vendors;
 			sourceTree = "<group>";
 		};
-		AB0E97F0161B52D4005498A0 /* LXReorderableCollectionViewFlowLayout */ = {
+		AB0E97F0161B52D4005498A0 /* MulleReorderableCollectionViewFlowLayout */ = {
 			isa = PBXGroup;
 			children = (
-				AB0E97F1161B52D4005498A0 /* LXReorderableCollectionViewFlowLayout.h */,
-				AB0E97F2161B52D4005498A0 /* LXReorderableCollectionViewFlowLayout.m */,
+				AB0E97F1161B52D4005498A0 /* MulleReorderableCollectionViewFlowLayout.h */,
+				AB0E97F2161B52D4005498A0 /* MulleReorderableCollectionViewFlowLayout.m */,
 			);
-			name = LXReorderableCollectionViewFlowLayout;
-			path = ../LXReorderableCollectionViewFlowLayout;
+			name = MulleReorderableCollectionViewFlowLayout;
+			path = ../MulleReorderableCollectionViewFlowLayout;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AB0E97C1161B4BEC005498A0 /* LXRCVFL Example using Storyboard */ = {
+		AB0E97C1161B4BEC005498A0 /* Demo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AB0E97E6161B4BEC005498A0 /* Build configuration list for PBXNativeTarget "LXRCVFL Example using Storyboard" */;
+			buildConfigurationList = AB0E97E6161B4BEC005498A0 /* Build configuration list for PBXNativeTarget "Demo" */;
 			buildPhases = (
 				AB0E97BE161B4BEC005498A0 /* Sources */,
 				AB0E97BF161B4BEC005498A0 /* Frameworks */,
@@ -157,9 +157,9 @@
 			);
 			dependencies = (
 			);
-			name = "LXRCVFL Example using Storyboard";
-			productName = "LXRCVFL Example using Storyboard";
-			productReference = AB0E97C2161B4BEC005498A0 /* LXRCVFL Example using Storyboard.app */;
+			name = Demo;
+			productName = Demo;
+			productReference = AB0E97C2161B4BEC005498A0 /* Demo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -171,7 +171,7 @@
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "d--buzz";
 			};
-			buildConfigurationList = AB0E97BC161B4BEC005498A0 /* Build configuration list for PBXProject "LXRCVFL Example using Storyboard" */;
+			buildConfigurationList = AB0E97BC161B4BEC005498A0 /* Build configuration list for PBXProject "Demo" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -183,7 +183,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AB0E97C1161B4BEC005498A0 /* LXRCVFL Example using Storyboard */,
+				AB0E97C1161B4BEC005498A0 /* Demo */,
 			);
 		};
 /* End PBXProject section */
@@ -211,9 +211,9 @@
 			files = (
 				AB0E97D3161B4BEC005498A0 /* main.m in Sources */,
 				AB0E97D7161B4BEC005498A0 /* AppDelegate.m in Sources */,
-				AB0E97EB161B4C3C005498A0 /* LXCollectionViewController.m in Sources */,
+				AB0E97EB161B4C3C005498A0 /* MulleCollectionViewController.m in Sources */,
 				AB0E97EE161B525D005498A0 /* PlayingCard.m in Sources */,
-				AB0E97F3161B52D4005498A0 /* LXReorderableCollectionViewFlowLayout.m in Sources */,
+				AB0E97F3161B52D4005498A0 /* MulleReorderableCollectionViewFlowLayout.m in Sources */,
 				AB0E97F6161B561F005498A0 /* PlayingCardCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -295,8 +295,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LXRCVFL Example using Storyboard/LXRCVFL Example using Storyboard-Prefix.pch";
-				INFOPLIST_FILE = "LXRCVFL Example using Storyboard/LXRCVFL Example using Storyboard-Info.plist";
+				GCC_PREFIX_HEADER = "src/Demo-Prefix.pch";
+				INFOPLIST_FILE = "src/Demo-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -306,8 +306,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LXRCVFL Example using Storyboard/LXRCVFL Example using Storyboard-Prefix.pch";
-				INFOPLIST_FILE = "LXRCVFL Example using Storyboard/LXRCVFL Example using Storyboard-Info.plist";
+				GCC_PREFIX_HEADER = "src/Demo-Prefix.pch";
+				INFOPLIST_FILE = "src/Demo-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -316,7 +316,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AB0E97BC161B4BEC005498A0 /* Build configuration list for PBXProject "LXRCVFL Example using Storyboard" */ = {
+		AB0E97BC161B4BEC005498A0 /* Build configuration list for PBXProject "Demo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AB0E97E4161B4BEC005498A0 /* Debug */,
@@ -325,7 +325,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AB0E97E6161B4BEC005498A0 /* Build configuration list for PBXNativeTarget "LXRCVFL Example using Storyboard" */ = {
+		AB0E97E6161B4BEC005498A0 /* Build configuration list for PBXNativeTarget "Demo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AB0E97E7161B4BEC005498A0 /* Debug */,

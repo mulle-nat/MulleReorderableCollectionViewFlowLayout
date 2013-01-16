@@ -1,5 +1,5 @@
 //
-// LXReorderableCollectionViewFlowLayout.m
+// MulleReorderableCollectionViewFlowLayout.m
 //
 // Created by Stan Chang Khin Boon on 1/10/12.
 // Copyright (c) 2012 d--buzz. All rights reserved.
@@ -8,14 +8,14 @@
 // This is MIT licensed
 //
 
-#import "LXReorderableCollectionViewFlowLayout.h"
+#import "MulleReorderableCollectionViewFlowLayout.h"
 #import <QuartzCore/QuartzCore.h>
 
-#define LX_FRAMES_PER_SECOND 60.0
+#define Mulle_FRAMES_PER_SECOND 60.0
 
 
 #ifndef CGGEOMETRY_LXSUPPORT_H_
-CG_INLINE CGPoint LXS_CGPointAdd(CGPoint thePoint1, CGPoint thePoint2)
+CG_INLINE CGPoint MulleS_CGPointAdd(CGPoint thePoint1, CGPoint thePoint2)
 {
    return( CGPointMake(thePoint1.x + thePoint2.x, thePoint1.y + thePoint2.y));
 }
@@ -23,34 +23,34 @@ CG_INLINE CGPoint LXS_CGPointAdd(CGPoint thePoint1, CGPoint thePoint2)
 
 #endif
 
-typedef NS_ENUM (NSInteger, LXDirection) {
-   LXUp = 1,
-   LXDown,
-   LXLeft,
-   LXRight
+typedef NS_ENUM (NSInteger, MulleDirection) {
+   MulleUp = 1,
+   MulleDown,
+   MulleLeft,
+   MulleRight
 };
 
-static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
+static NSString *MulleScrollingDirectionKey = @"MulleScrollingDirection";
 
 
 
-@interface LXReorderableCollectionViewFlowLayout ()
+@interface MulleReorderableCollectionViewFlowLayout ()
 
 - (void) applyLayoutAttributes:(UICollectionViewLayoutAttributes *) attributes;
 
 @end
 
 
-@interface UICollectionViewLayoutAttributes ( LXReorderableCollectionViewFlowLayout)
+@interface UICollectionViewLayoutAttributes ( MulleReorderableCollectionViewFlowLayout)
 
-- (void) lxApplyToLayoutIfNeeded:(LXReorderableCollectionViewFlowLayout *) layout;
+- (void) mulleApplyToLayoutIfNeeded:(MulleReorderableCollectionViewFlowLayout *) layout;
 
 @end
 
 
-@implementation UICollectionViewLayoutAttributes ( LXReorderableCollectionViewFlowLayout)
+@implementation UICollectionViewLayoutAttributes ( MulleReorderableCollectionViewFlowLayout)
 
-- (void) lxApplyToLayoutIfNeeded:(LXReorderableCollectionViewFlowLayout *) layout
+- (void) mulleApplyToLayoutIfNeeded:(MulleReorderableCollectionViewFlowLayout *) layout
 {
    if( [self representedElementCategory] == UICollectionElementCategoryCell)
         [layout applyLayoutAttributes:self];
@@ -60,16 +60,16 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 
 // should prefix these messages
 
-@interface UICollectionViewCell (LXReorderableCollectionViewFlowLayout )
+@interface UICollectionViewCell (MulleReorderableCollectionViewFlowLayout )
 
-- (UIImage *) lxRenderedImage;
+- (UIImage *) mulleRenderedImage;
 
 @end
 
 
-@implementation UICollectionViewCell ( LXReorderableCollectionViewFlowLayout )
+@implementation UICollectionViewCell ( MulleReorderableCollectionViewFlowLayout )
 
-- (UIImage *) lxRenderedImage
+- (UIImage *) mulleRenderedImage
 {
    UIImage   *image;
    
@@ -84,12 +84,12 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 @end
 
         
-@implementation LXReorderableCollectionViewFlowLayout
+@implementation MulleReorderableCollectionViewFlowLayout
 
 
-static LXDirection   autoScrollDirection( NSTimer *timer)
+static MulleDirection   autoScrollDirection( NSTimer *timer)
 {
-   return( [[[timer userInfo] objectForKey:LXScrollingDirectionKey] integerValue]);
+   return( [[[timer userInfo] objectForKey:MulleScrollingDirectionKey] integerValue]);
 }
 
 
@@ -121,10 +121,10 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    
    [self invalidateAutoScroll];
    
-   scrollingTimer_ = [[NSTimer scheduledTimerWithTimeInterval:1.0 / LX_FRAMES_PER_SECOND
+   scrollingTimer_ = [[NSTimer scheduledTimerWithTimeInterval:1.0 / Mulle_FRAMES_PER_SECOND
                                             target:self
                                           selector:@selector( handleScroll:)
-                                          userInfo:@{ LXScrollingDirectionKey : @( dir ) }
+                                          userInfo:@{ MulleScrollingDirectionKey : @( dir ) }
                                                       repeats:YES] retain];
 }
 
@@ -194,7 +194,7 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    NSIndexPath        *selectedPath;
    NSIndexPath        *previousPath;
    UICollectionView   *collectionView;
-   id<LXReorderableCollectionViewDelegateFlowLayout> delegate;
+   id<MulleReorderableCollectionViewDelegateFlowLayout> delegate;
    
    collectionView = [self collectionView];
    selectedPath   = [collectionView indexPathForItemAtPoint:[currentView_ center]];
@@ -205,8 +205,8 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    
    [self setSelectedItemIndexPath:selectedPath];
    
-   delegate = (id <LXReorderableCollectionViewDelegateFlowLayout> ) [collectionView delegate];
-   if( [delegate conformsToProtocol:@protocol( LXReorderableCollectionViewDelegateFlowLayout)])
+   delegate = (id <MulleReorderableCollectionViewDelegateFlowLayout> ) [collectionView delegate];
+   if( [delegate conformsToProtocol:@protocol( MulleReorderableCollectionViewDelegateFlowLayout)])
    {
       // Check with the delegate to see if this move is even allowed.
       if( [delegate respondsToSelector:@selector( collectionView:layout:itemAtIndexPath:shouldMoveToIndexPath: )])
@@ -237,7 +237,7 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
 - (void) handleScroll:(NSTimer *) timer
 {
    UICollectionView   *collectionView;
-   LXDirection   dir;
+   MulleDirection   dir;
    CGFloat   theDistance;
    CGPoint   theContentOffset;
    CGPoint   translation;
@@ -248,9 +248,9 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    CGFloat   theMinY;
    CGFloat   theMaxY;
    
-   dir              = (LXDirection) autoScrollDirection( timer);
+   dir              = (MulleDirection) autoScrollDirection( timer);
 
-   theDistance      = scrollingSpeed_ / LX_FRAMES_PER_SECOND;
+   theDistance      = scrollingSpeed_ / Mulle_FRAMES_PER_SECOND;
    collectionView   = [self collectionView];
    theContentOffset = [collectionView contentOffset];
    bounds           = [collectionView bounds];
@@ -258,7 +258,7 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    
    switch( dir)
    {
-   case LXUp:
+   case MulleUp:
       theDistance = -theDistance;
       theMinY     = 0.0f;
 
@@ -268,7 +268,7 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
       translation = CGPointMake( 0.0f, theDistance);
       break;
 
-   case LXDown:
+   case MulleDown:
       theMaxY = MAX( contentSize.height, CGRectGetHeight( bounds)) - CGRectGetHeight( bounds);
 
       if( (theContentOffset.y + theDistance) >= theMaxY)
@@ -277,7 +277,7 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
       translation = CGPointMake( 0.0f, theDistance);
       break;
 
-   case LXLeft:
+   case MulleLeft:
       theDistance = -theDistance;
       theMinX     = 0.0f;
 
@@ -287,7 +287,7 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
       translation = CGPointMake( theDistance, 0.0f);
       break;
 
-   case LXRight:
+   case MulleRight:
       theMaxX = MAX( contentSize.width, CGRectGetWidth( bounds)) - CGRectGetWidth( bounds);
 
       if((theContentOffset.x + theDistance) >= theMaxX)
@@ -300,10 +300,10 @@ static LXDirection   autoScrollDirection( NSTimer *timer)
    }
    
    
-   currentViewCenter_ = LXS_CGPointAdd( currentViewCenter_, translation);
-   [currentView_ setCenter:LXS_CGPointAdd( currentViewCenter_, panTranslationInCollectionView_)];
+   currentViewCenter_ = MulleS_CGPointAdd( currentViewCenter_, translation);
+   [currentView_ setCenter:MulleS_CGPointAdd( currentViewCenter_, panTranslationInCollectionView_)];
 
-   [collectionView setContentOffset:LXS_CGPointAdd( theContentOffset, translation)];
+   [collectionView setContentOffset:MulleS_CGPointAdd( theContentOffset, translation)];
 }
 
 
@@ -330,10 +330,10 @@ typedef struct
    flag = [collectionViewCell isHighlighted];
    
    [collectionViewCell setHighlighted:NO];
-   theImage = [collectionViewCell lxRenderedImage];
+   theImage = [collectionViewCell mulleRenderedImage];
 
    [collectionViewCell setHighlighted:YES];
-   theHighlightedImage = [collectionViewCell lxRenderedImage];
+   theHighlightedImage = [collectionViewCell mulleRenderedImage];
 
    [collectionViewCell setHighlighted:flag];
 
@@ -355,12 +355,12 @@ typedef struct
 }
 
 
-- (id <LXReorderableCollectionViewDelegateFlowLayout>) lxDelegate
+- (id <MulleReorderableCollectionViewDelegateFlowLayout>) mulleDelegate
 {
    id   delegate;
    
-   delegate = (id <LXReorderableCollectionViewDelegateFlowLayout> ) [[self collectionView] delegate];
-   if( ! [delegate conformsToProtocol:@protocol( LXReorderableCollectionViewDelegateFlowLayout )])
+   delegate = (id <MulleReorderableCollectionViewDelegateFlowLayout> ) [[self collectionView] delegate];
+   if( ! [delegate conformsToProtocol:@protocol( MulleReorderableCollectionViewDelegateFlowLayout )])
       return( nil);
    return( delegate);
 }
@@ -377,11 +377,11 @@ typedef struct
 - (void) finishHighlighting:(reorder_views_context *) ctxt
            withSelectedPath:(NSIndexPath *) selectedPath
 {
-   id <LXReorderableCollectionViewDelegateFlowLayout>   delegate;
+   id <MulleReorderableCollectionViewDelegateFlowLayout>   delegate;
    
    [ctxt->theHighlightedImageView removeFromSuperview];
 
-   delegate = [self lxDelegate];
+   delegate = [self mulleDelegate];
    if( [delegate respondsToSelector:@selector( collectionView:layout:didBeginReorderingAtIndexPath: )])
       [delegate collectionView:[self collectionView]
                         layout:self
@@ -402,7 +402,7 @@ typedef struct
 
 - (void) animationCompletedWithSelectedPath:(NSIndexPath *) selectedPath
 {
-   id <LXReorderableCollectionViewDelegateFlowLayout>   delegate;
+   id <MulleReorderableCollectionViewDelegateFlowLayout>   delegate;
    UICollectionView    *collectionView;
    
    [[self retain] autorelease]; // voodoo, because of strong/weak voodoo in original code
@@ -413,7 +413,7 @@ typedef struct
    
    [self invalidateLayout];
    
-   delegate = [self lxDelegate];
+   delegate = [self mulleDelegate];
    if( [delegate respondsToSelector:@selector( collectionView:layout:didEndReorderingAtIndexPath: )])
          [delegate collectionView:collectionView
                            layout:self
@@ -428,7 +428,7 @@ typedef struct
    UICollectionViewCell    *collectionViewCell;
    reorder_views_context   ctxt;
    CGPoint                 location;
-   id <LXReorderableCollectionViewDelegateFlowLayout>   delegate;
+   id <MulleReorderableCollectionViewDelegateFlowLayout>   delegate;
    
    collectionView = [self collectionView];
    
@@ -437,7 +437,7 @@ typedef struct
    case UIGestureRecognizerStateBegan:
       location     = [recognizer locationInView:collectionView];
       selectedPath = [collectionView indexPathForItemAtPoint:location];
-      delegate     = [self lxDelegate];
+      delegate     = [self mulleDelegate];
          
       if( [delegate respondsToSelector:@selector( collectionView:layout:shouldBeginReorderingAtIndexPath:)])
       {
@@ -485,7 +485,7 @@ typedef struct
 
    case UIGestureRecognizerStateEnded:
       selectedPath = selectedItemIndexPath_;
-      delegate     = [self lxDelegate];
+      delegate     = [self mulleDelegate];
          
       if( [delegate respondsToSelector:@selector( collectionView:layout:willEndReorderingAtIndexPath: )])
          [delegate collectionView:collectionView
@@ -524,7 +524,7 @@ typedef struct
       collectionView = [self collectionView];
       translation    = [recognizer translationInView:collectionView];
 
-      location       = LXS_CGPointAdd( currentViewCenter_,
+      location       = MulleS_CGPointAdd( currentViewCenter_,
                                       panTranslationInCollectionView_);
 
       panTranslationInCollectionView_ = translation;
@@ -539,10 +539,10 @@ typedef struct
       {
       case UICollectionViewScrollDirectionVertical :
          if( location.y < (CGRectGetMinY( bounds) + insets.top))
-            [self setupAutoScrollInDirection:LXUp];
+            [self setupAutoScrollInDirection:MulleUp];
          else
             if( location.y > (CGRectGetMaxY( bounds) - insets.bottom))
-               [self setupAutoScrollInDirection:LXDown];
+               [self setupAutoScrollInDirection:MulleDown];
             else
                [self invalidateAutoScroll];
          
@@ -550,10 +550,10 @@ typedef struct
          
       case UICollectionViewScrollDirectionHorizontal :
          if( location.x < (CGRectGetMinX( bounds) + insets.left))
-            [self setupAutoScrollInDirection:LXLeft];
+            [self setupAutoScrollInDirection:MulleLeft];
          else
             if( location.x > (CGRectGetMaxX( bounds) - insets.right))
-               [self setupAutoScrollInDirection:LXRight];
+               [self setupAutoScrollInDirection:MulleRight];
             else
                [self invalidateAutoScroll];
          
@@ -577,7 +577,7 @@ typedef struct
 
    array = [super layoutAttributesForElementsInRect:theRect];
    
-   [array makeObjectsPerformSelector:@selector( lxApplyToLayoutIfNeeded:)
+   [array makeObjectsPerformSelector:@selector( mulleApplyToLayoutIfNeeded:)
                                     withObject:self];
    return( array);
 }
@@ -588,7 +588,7 @@ typedef struct
    UICollectionViewLayoutAttributes   *attributes;
    
    attributes = [super layoutAttributesForItemAtIndexPath:path];
-   [attributes lxApplyToLayoutIfNeeded:self];
+   [attributes mulleApplyToLayoutIfNeeded:self];
 
    return( attributes);
 }

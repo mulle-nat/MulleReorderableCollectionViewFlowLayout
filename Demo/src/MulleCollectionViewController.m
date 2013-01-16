@@ -1,20 +1,20 @@
 //
-//  LXCollectionViewController.m
-//  LXRCVFL Example using Storyboard
+//  MulleCollectionViewController.m
+//  Demo
 //
 //  Created by Stan Chang Khin Boon on 3/10/12.
 //  Copyright (c) 2012 d--buzz. All rights reserved.
 //
 
-#import "LXCollectionViewController.h"
+#import "MulleCollectionViewController.h"
 #import "PlayingCard.h"
 #import "PlayingCardCell.h"
 
-@interface LXCollectionViewController ()
+@interface MulleCollectionViewController ()
 
 @end
 
-@implementation LXCollectionViewController
+@implementation MulleCollectionViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -108,7 +108,7 @@
     }
 }
 
-#pragma mark - LXReorderableCollectionViewDelegateFlowLayout methods
+#pragma mark - MulleReorderableCollectionViewDelegateFlowLayout methods
 
 - (void)collectionView:(UICollectionView *)theCollectionView layout:(UICollectionViewLayout *)theLayout itemAtIndexPath:(NSIndexPath *)theFromIndexPath willMoveToIndexPath:(NSIndexPath *)theToIndexPath {
     id theFromItem = [self.deck objectAtIndex:theFromIndexPath.item];

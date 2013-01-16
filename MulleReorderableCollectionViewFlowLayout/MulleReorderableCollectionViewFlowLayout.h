@@ -1,5 +1,5 @@
 //
-// LXReorderableCollectionViewFlowLayout.h
+// MulleReorderableCollectionViewFlowLayout.h
 //
 // Created by Stan Chang Khin Boon on 1/10/12.
 // Copyright (c) 2012 d--buzz. All rights reserved.
@@ -11,7 +11,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface LXReorderableCollectionViewFlowLayout : UICollectionViewFlowLayout < UIGestureRecognizerDelegate>
+@interface MulleReorderableCollectionViewFlowLayout : UICollectionViewFlowLayout < UIGestureRecognizerDelegate>
 {
    UIEdgeInsets   triggerScrollingEdgeInsets_;
    CGFloat        scrollingSpeed_;
@@ -41,7 +41,7 @@
 
 
 
-@protocol LXReorderableCollectionViewDelegateFlowLayout<UICollectionViewDelegateFlowLayout>
+@protocol MulleReorderableCollectionViewDelegateFlowLayout<UICollectionViewDelegateFlowLayout>
 
 - (void) collectionView:(UICollectionView *) collectionView
                  layout:(UICollectionViewLayout *) layout
