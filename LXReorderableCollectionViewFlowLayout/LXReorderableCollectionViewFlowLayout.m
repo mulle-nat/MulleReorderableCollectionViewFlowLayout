@@ -28,6 +28,32 @@ typedef NS_ENUM (NSInteger, LXReorderableCollectionViewFlowLayoutScrollingDirect
 
 static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectionKey = @"LXScrollingDirection";
 
+
+
+@interface LXReorderableCollectionViewFlowLayout ()
+
+- (void) applyLayoutAttributes:(UICollectionViewLayoutAttributes *) attributes;
+
+@end
+
+
+@interface UICollectionViewLayoutAttributes ( LXReorderableCollectionViewFlowLayout)
+
+- (void) applyToLayoutIfNeeded:(LXReorderableCollectionViewFlowLayout *) layout;
+
+@end
+
+@implementation UICollectionViewLayoutAttributes ( LXReorderableCollectionViewFlowLayout)
+
+- (void) applyToLayoutIfNeeded:(LXReorderableCollectionViewFlowLayout *) layout
+{
+   if( [self representedElementCategory] == UICollectionElementCategoryCell)
+        [layout applyLayoutAttributes:self];
+}
+        
+@end
+
+        
 @implementation LXReorderableCollectionViewFlowLayout
 
 - (void) setUpGestureRecognizersOnCollectionView
@@ -37,10 +63,10 @@ static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectio
 
    // Links the default long press gesture recognizer to the custom long press gesture recognizer we are creating now
    // by enforcing failure dependency so that they doesn't clash.
-   for( UIGestureRecognizer *theGestureRecognizer in self.collectionView.gestureRecognizers)
+   for( UIGestureRecognizer *recognizer in self.collectionView.gestureRecognizers)
    {
-      if( [theGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]])
-         [theGestureRecognizer requireGestureRecognizerToFail:theLongPressGestureRecognizer];
+      if( [recognizer isKindOfClass:[UILongPressGestureRecognizer class]])
+         [recognizer requireGestureRecognizerToFail:theLongPressGestureRecognizer];
    }
 
    theLongPressGestureRecognizer.delegate = self;
@@ -530,105 +556,86 @@ static NSString *const   kLXReorderableCollectionViewFlowLayoutScrollingDirectio
 
 #pragma mark - UICollectionViewFlowLayoutDelegate methods
 
+
 - (NSArray *) layoutAttributesForElementsInRect:(CGRect) theRect
 {
-   NSArray   *theLayoutAttributesForElementsInRect = [super layoutAttributesForElementsInRect:theRect];
+   NSArray   *array;
 
-   for( UICollectionViewLayoutAttributes *theLayoutAttributes in theLayoutAttributesForElementsInRect)
-   {
-      switch( theLayoutAttributes.representedElementCategory)
-      {
-      case UICollectionElementCategoryCell:
-         [self applyLayoutAttributes:theLayoutAttributes];
-         break;
-
-      default:
-         break;
-      }
-   }
-
-   return(theLayoutAttributesForElementsInRect);
+   array = [super layoutAttributesForElementsInRect:theRect];
+   
+   [array makeObjectsPerformSelector:@selector( applyLayoutAttributesIfNeeded:)
+                                    withObject:self];
+   return( array);
 }
 
 
-- (UICollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath:(NSIndexPath *) theIndexPath
+- (UICollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath:(NSIndexPath *) path
 {
-   UICollectionViewLayoutAttributes   *theLayoutAttributes = [super layoutAttributesForItemAtIndexPath:theIndexPath];
+   UICollectionViewLayoutAttributes   *attributes;
+   
+   attributes = [super layoutAttributesForItemAtIndexPath:path];
+   [attributes applyToLayoutIfNeeded:self];
 
-   switch( theLayoutAttributes.representedElementCategory)
-   {
-   case UICollectionElementCategoryCell:
-      [self applyLayoutAttributes:theLayoutAttributes];
-      break;
-
-   default:
-      break;
-   }
-
-   return(theLayoutAttributes);
+   return( attributes);
 }
 
 
 - (CGSize) collectionViewContentSize
 {
-   CGSize   theCollectionViewContentSize = [super collectionViewContentSize];
-
-   if( self.alwaysScroll)
+   CGSize   size;
+   CGRect   bounds;
+   
+   size = [super collectionViewContentSize];
+   
+   if( ! [self alwaysScroll])
+      return( size);
+   
+   bounds = [[self collectionView] bounds];
+   switch( [self scrollDirection])
    {
-      switch( self.scrollDirection)
-      {
-      case UICollectionViewScrollDirectionVertical:
-
-         if( theCollectionViewContentSize.height <= CGRectGetHeight(self.collectionView.bounds))
-            theCollectionViewContentSize.height = CGRectGetHeight(self.collectionView.bounds) + 1.0f;
-
-         break;
-
-      case UICollectionViewScrollDirectionHorizontal:
-
-         if( theCollectionViewContentSize.width <= CGRectGetWidth(self.collectionView.bounds))
-            theCollectionViewContentSize.width = CGRectGetWidth(self.collectionView.bounds) + 1.0f;
-
-         break;
-      }
+   case UICollectionViewScrollDirectionVertical :
+      if( size.height <= CGRectGetHeight( bounds))
+         size.height = CGRectGetHeight(bounds) + 1.0f;
+      break;
+      
+   case UICollectionViewScrollDirectionHorizontal :
+      if( size.width <= CGRectGetWidth( bounds))
+         size.width = CGRectGetWidth( bounds) + 1.0f;
+      break;
    }
-
-   return(theCollectionViewContentSize);
+   
+   return( size);
 }
 
 
 #pragma mark - UIGestureRecognizerDelegate methods
 
-- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer *) theGestureRecognizer
+- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer *) recognizer
 {
-   if( [self.panGestureRecognizer isEqual:theGestureRecognizer])
-      return(self.selectedItemIndexPath != nil);
+   if( [[self panGestureRecognizer] isEqual:recognizer])
+      return( [self selectedItemIndexPath] != nil);
 
-   return(YES);
+   return( YES);
 }
 
 
-- (BOOL)                            gestureRecognizer:(UIGestureRecognizer *) theGestureRecognizer
-   shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *) theOtherGestureRecognizer
+- (BOOL) gestureRecognizer:(UIGestureRecognizer *) recognizer
+   shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *) other
 {
-   if( [self.longPressGestureRecognizer isEqual:theGestureRecognizer])
-   {
-      if( [self.panGestureRecognizer isEqual:theOtherGestureRecognizer])
-         return(YES);
-      else
-         return(NO);
-   }
-   else if( [self.panGestureRecognizer isEqual:theGestureRecognizer])
-   {
-      if( [self.longPressGestureRecognizer isEqual:theOtherGestureRecognizer])
-         return(YES);
-      else
-         return(NO);
-   }
-
-   return(NO);
+   UIGestureRecognizer   *panner;
+   UIGestureRecognizer   *longer;
+   
+   panner = [self panGestureRecognizer];
+   longer = [self longPressGestureRecognizer];
+   
+   if( [longer isEqual:recognizer])
+      return( [panner isEqual:other]);
+   
+   if( [panner isEqual:recognizer])
+      return( [longer isEqual:other]);
+   
+   return( NO);
 }
-
 
 @end
 
