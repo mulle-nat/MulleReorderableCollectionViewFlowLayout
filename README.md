@@ -81,5 +81,5 @@ README.md structure is heavily referenced from [AFNetworking](https://github.com
 License
 =======
 
-__MulleReorderableCollectionViewFlowLayout__ is available under the [http://opensource.org/licenses/MIT](MIT license).
+__MulleReorderableCollectionViewFlowLayout__ is available under the [MIT License](http://opensource.org/licenses/MIT).
 
