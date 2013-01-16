@@ -82,3 +82,6 @@ License
 =======
 
 MulleReorderableCollectionViewFlowLayout is available under the MIT license.
+========================================
+
+A fork of LXReorderableCollectionViewFlowLayout, that doesn't require ARC
