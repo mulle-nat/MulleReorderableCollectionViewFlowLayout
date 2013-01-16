@@ -4,6 +4,9 @@
 // Created by Stan Chang Khin Boon on 1/10/12.
 // Copyright (c) 2012 d--buzz. All rights reserved.
 //
+// Oldschool rewrite by Nat!  01/16/13
+// This is MIT licensed
+//
 
 #import "LXReorderableCollectionViewFlowLayout.h"
 #import <QuartzCore/QuartzCore.h>
@@ -40,14 +43,14 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 
 @interface UICollectionViewLayoutAttributes ( LXReorderableCollectionViewFlowLayout)
 
-- (void) applyToLayoutIfNeeded:(LXReorderableCollectionViewFlowLayout *) layout;
+- (void) lxApplyToLayoutIfNeeded:(LXReorderableCollectionViewFlowLayout *) layout;
 
 @end
 
 
 @implementation UICollectionViewLayoutAttributes ( LXReorderableCollectionViewFlowLayout)
 
-- (void) applyToLayoutIfNeeded:(LXReorderableCollectionViewFlowLayout *) layout
+- (void) lxApplyToLayoutIfNeeded:(LXReorderableCollectionViewFlowLayout *) layout
 {
    if( [self representedElementCategory] == UICollectionElementCategoryCell)
         [layout applyLayoutAttributes:self];
@@ -59,14 +62,14 @@ static NSString *LXScrollingDirectionKey = @"LXScrollingDirection";
 
 @interface UICollectionViewCell (LXReorderableCollectionViewFlowLayout )
 
-- (UIImage *) renderedImage;
+- (UIImage *) lxRenderedImage;
 
 @end
 
 
 @implementation UICollectionViewCell ( LXReorderableCollectionViewFlowLayout )
 
-- (UIImage *) renderedImage
+- (UIImage *) lxRenderedImage
 {
    UIImage   *image;
    
@@ -327,10 +330,10 @@ typedef struct
    flag = [collectionViewCell isHighlighted];
    
    [collectionViewCell setHighlighted:NO];
-   theImage = [collectionViewCell renderedImage];
+   theImage = [collectionViewCell lxRenderedImage];
 
    [collectionViewCell setHighlighted:YES];
-   theHighlightedImage = [collectionViewCell renderedImage];
+   theHighlightedImage = [collectionViewCell lxRenderedImage];
 
    [collectionViewCell setHighlighted:flag];
 
@@ -574,7 +577,7 @@ typedef struct
 
    array = [super layoutAttributesForElementsInRect:theRect];
    
-   [array makeObjectsPerformSelector:@selector( applyToLayoutIfNeeded:)
+   [array makeObjectsPerformSelector:@selector( lxApplyToLayoutIfNeeded:)
                                     withObject:self];
    return( array);
 }
@@ -585,7 +588,7 @@ typedef struct
    UICollectionViewLayoutAttributes   *attributes;
    
    attributes = [super layoutAttributesForItemAtIndexPath:path];
-   [attributes applyToLayoutIfNeeded:self];
+   [attributes lxApplyToLayoutIfNeeded:self];
 
    return( attributes);
 }
